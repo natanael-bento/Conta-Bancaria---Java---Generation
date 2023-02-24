@@ -1,8 +1,10 @@
 package conta;
 
 import java.io.IOException;
+import java.util.InputMismatchException;
 import java.util.Scanner;
 
+import conta.controller.ContaController;
 import conta.model.ContaCorrente;
 import conta.model.ContaPoupanca;
 import conta.util.cores;
@@ -13,13 +15,25 @@ public class Menu {
 
 		Scanner leia = new Scanner(System.in);
 
-		ContaCorrente cc1 = new ContaCorrente(1, 123, 1, "Javinson Arrays dos Santos", 1400.0f, 300.0f);
+		// criar contas na collection:
+		ContaController contas = new ContaController();
 
-		cc1.visualizar();
+		// agilizar testes
+		System.out.println("\nCriar Contas\n");
 
-		ContaPoupanca cp1 = new ContaPoupanca(2, 136, 2, "Bruna Souza Mendes", 800.0f, 100);
+		ContaCorrente cc1 = new ContaCorrente(contas.gerarNumero(), 123, 1, "João da Silva", 1000f, 100.0f);
+		contas.cadastrar(cc1);
 
-		cp1.visualizar();
+		ContaCorrente cc2 = new ContaCorrente(contas.gerarNumero(), 124, 1, "Maria da Silva", 2000f, 100.0f);
+		contas.cadastrar(cc2);
+
+		ContaPoupanca cp1 = new ContaPoupanca(contas.gerarNumero(), 125, 2, "Mariana dos Santos", 4000f, 12);
+		contas.cadastrar(cp1);
+
+		ContaPoupanca cp2 = new ContaPoupanca(contas.gerarNumero(), 125, 2, "Juliana Ramos", 8000f, 15);
+		contas.cadastrar(cp2);
+
+		contas.listarTodas();
 
 		int opcao, numero, agencia, tipo, aniversario;
 		int nDestino;
@@ -28,31 +42,36 @@ public class Menu {
 
 		while (true) {
 
-			System.out.println(
-					cores.TEXT_YELLOW + cores.ANSI_BLACK_BACKGROUND + "*********************************************");
-			System.out.println("*********************************************");
-			System.out.println("                                             ");
-			System.out.println("                 BANCO INGAZEIRA             ");
-			System.out.println("                                             ");
-			System.out.println("*********************************************");
-			System.out.println("*********************************************");
-			System.out.println("                                             ");
-			System.out.println("         1 - Criar Uma Conta                 ");
-			System.out.println("         2 - Listar todas as Contas          ");
-			System.out.println("         3 - Buscar conta por Numero         ");
-			System.out.println("         4 - Atualizar dados da Conta        ");
-			System.out.println("         5 - Apagar Conta                    ");
-			System.out.println("         6 - Sacar                           ");
-			System.out.println("         7 - Depositar                       ");
-			System.out.println("         8 - Tranferir valores entre conta   ");
-			System.out.println("         9 - Sair                            ");
-			System.out.println("                                             ");
-			System.out.println("*********************************************");
-			System.out.println("*********************************************" + cores.TEXT_RESET);
-			System.out.println("           Entre com a opção desejada:      ");
-			System.out.println("                                             ");
-
-			opcao = leia.nextInt();
+			System.out.println(cores.TEXT_YELLOW + cores.ANSI_BLACK_BACKGROUND
+					+ "**************************************************");
+			System.out.println("**************************************************");
+			System.out.println("* *                                            * *");
+			System.out.println("* *                BANCO INGAZEIRA             * *");
+			System.out.println("* *                                            * *");
+			System.out.println("**************************************************");
+			System.out.println("**************************************************");
+			System.out.println("* *                                            * *");
+			System.out.println("* *       1 - Criar Uma Conta                  * *");
+			System.out.println("* *        2 - Listar todas as Contas          * *");
+			System.out.println("* *        3 - Buscar conta por Numero         * *");
+			System.out.println("* *        4 - Atualizar dados da Conta        * *");
+			System.out.println("* *        5 - Apagar Conta                    * *");
+			System.out.println("* *        6 - Sacar                           * *");
+			System.out.println("* *        7 - Depositar                       * *");
+			System.out.println("* *        8 - Tranferir valores entre conta   * *");
+			System.out.println("* *        9 - Sair                            * *");
+			System.out.println("* *                                            * *");
+			System.out.println("**************************************************");
+			System.out.println("**************************************************");
+			System.out.println("          Entre com a opção desejada:             " + cores.TEXT_RESET);
+			System.out.println("                                                  ");
+			try {
+				opcao = leia.nextInt();
+			} catch (InputMismatchException e) {
+				System.out.println("Digite apenas numeros inteiros!");
+				leia.nextLine();
+				opcao = 0;
+			}
 
 			if (opcao == 9) {
 				System.out.println("\nBanco Ingazeira - Seu banco, sua familia!");
@@ -83,14 +102,15 @@ public class Menu {
 				case 1 -> {
 					System.out.println("limite da conta corrente: ");
 					limite = leia.nextFloat();
-					ContaCorrente cc = new ContaCorrente(0, agencia, tipo, titular, saldo, limite);
-					cc.visualizar();
+					contas.cadastrar(new ContaCorrente(contas.gerarNumero(), agencia, tipo, titular, saldo, limite));
+					// cc.visualizar();
 				}
 				case 2 -> {
 					System.out.println("Aniversairo da conta Poupança: ");
 					aniversario = leia.nextInt();
-					ContaPoupanca cp = new ContaPoupanca(0, agencia, tipo, titular, saldo, aniversario);
-					cp.visualizar();
+					contas.cadastrar(
+							new ContaPoupanca(contas.gerarNumero(), agencia, tipo, titular, saldo, aniversario));
+					// cp.visualizar();
 				}
 				}
 
@@ -98,6 +118,9 @@ public class Menu {
 				break;
 			case 2:
 				System.out.println("Listar todas as Contas\n\n");
+
+				contas.listarTodas();
+
 				keyPress();
 				break;
 			case 3:
@@ -106,6 +129,8 @@ public class Menu {
 				System.out.println("Numero da conta: ");
 				numero = leia.nextInt();
 
+				contas.procurarPorNumero(numero);
+
 				keyPress();
 				break;
 			case 4:
@@ -113,7 +138,8 @@ public class Menu {
 
 				System.out.println("Numero da conta: ");
 				numero = leia.nextInt();
-
+				
+            if (contas.buscarNaCollection(numero) !=null) {
 				System.out.println("Numero da Agencia: ");
 				agencia = leia.nextInt();
 
@@ -121,23 +147,31 @@ public class Menu {
 				leia.skip("\\R?");
 				titular = leia.nextLine();
 
-				tipo = 0;
+				tipo = contas.retornaTipo(numero);
+				
+				
+				
+				System.out.println("saldo da conta: ");
+				saldo = leia.nextFloat();
 
 				switch (tipo) {
 				case 1 -> {
 					System.out.println("limite da conta corrente: ");
 					limite = leia.nextFloat();
-					ContaCorrente cc = new ContaCorrente(0, agencia, tipo, titular, saldo, limite);
-					cc.visualizar();
+					
+					contas.atualizar( new ContaCorrente(numero, agencia, tipo, titular, saldo, limite));
 				}
 				case 2 -> {
 					System.out.println("Aniversairo da conta Poupança: ");
 					aniversario = leia.nextInt();
-					ContaPoupanca cp = new ContaPoupanca(0, agencia, tipo, titular, saldo, aniversario);
-					cp.visualizar();
+					
+					contas.atualizar(new ContaPoupanca(numero, agencia, tipo, titular, saldo, aniversario));
 				}
 				}
-
+			}else
+				
+				System.out.println("A conta nao foi encontrada");
+				
 				keyPress();
 				break;
 			case 5:
@@ -145,6 +179,8 @@ public class Menu {
 
 				System.out.println("Numero da conta: ");
 				numero = leia.nextInt();
+				
+				contas.deletar(numero);
 
 				keyPress();
 				break;
